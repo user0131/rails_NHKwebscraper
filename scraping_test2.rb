@@ -1,19 +1,12 @@
-require 'nokogiri'
 require 'open-uri'
+require 'nokogiri'
 
-def fetch_article_info(url)
-  # URLからHTMLを取得
-  html = URI.open(url)
-  doc = Nokogiri::HTML(html)
+url = 'https://www3.nhk.or.jp/news/word/0001539.html'
 
-  # タイトルを取得
-  title = doc.at_css('title').text
+# urlにアクセスしてhtmlを取得する
+html = URI.open(url).read
 
-  # 記事の本文を取得（例として、'article-body'クラスを持つ要素をターゲットにします）
-  article_body = doc.css('.article-body').map(&:text).join("\n")
-
-  # 結果を表示
-  puts "タイトル: #{title}"
-  puts "記事の本文:\n#{article_body}"
-end
+# 取得したhtmlをNokogiriでパースする
+doc = Nokogiri::HTML.parse(html)
+pp doc
 
