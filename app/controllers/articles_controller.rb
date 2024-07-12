@@ -1,6 +1,5 @@
 class ArticlesController < ApplicationController
   def index
-       @articles = Article.all
   end
   
   #scrapeアクション。入力したurlをもとにスクレイピングする
