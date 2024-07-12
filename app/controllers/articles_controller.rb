@@ -1,7 +1,11 @@
 class ArticlesController < ApplicationController
   def index
   end
-  
+
+  def show
+    @articles = Article.all
+  end
+
   #scrapeアクション。入力したurlをもとにスクレイピングする
   def scrape
     url = params[:url]
