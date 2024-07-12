@@ -33,6 +33,9 @@ puts "Title: #{title}"
 puts "Time: #{time}"
 puts "Content: #{content}"
 
+# データベースに保存
+Article.create(title: title, content: content)
+
 # 必要に応じて抽出したデータをJSON形式で保存
 #data_dict = { 'title' => title, 'content' => content }
 #File.open('scraped_article.json', 'w') do |f|
