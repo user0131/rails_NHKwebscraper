@@ -1,5 +1,4 @@
 Rails.application.routes.draw do
-  get 'articles/index'
-  get 'static_pages/home'
-  root "static_pages#home"
+   root 'articles#index'
+   resources :articles, only: [:index]
 end

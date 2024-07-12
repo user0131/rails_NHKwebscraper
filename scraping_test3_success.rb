@@ -34,7 +34,7 @@ puts "Time: #{time}"
 puts "Content: #{content}"
 
 # データベースに保存
-Article.create(title: title, content: content)
+Article.create(title: title, time: time, content: content)
 
 # 必要に応じて抽出したデータをJSON形式で保存
 #data_dict = { 'title' => title, 'content' => content }
