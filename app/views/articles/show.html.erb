@@ -57,11 +57,30 @@
 </head>
 <body>
   <header >
-    <h1>スクレイピングアプリケーション</h1>
-    <%= form_tag({controller: 'articles', action: 'scrape'}, method: 'post') do %>
-    <%= text_field_tag :url, nil, placeholder: 'スクレイピングするURLを入力' %>
-    <%= submit_tag '実行' %>
-    <% end %>
+    <form action="/submit-url" method="post">
+        <input type="url" id="url" name="url" placeholder="スクレイピングするURLを入力" required>
+        <button type="submit">実行</button>
+    </form>
   </header>
+  <main>
+    <table>
+        <thead>
+            <tr>
+                <th>タイトル</th>
+                <th>日時</th>
+                <th>本文</th>
+            </tr>
+        </thead>
+        <tbody>
+          <% @articles.each do |article| %>
+          <tr>
+            <td><%= article.title %></td>
+            <td><%= article.time %></td>
+            <td><%= article.content %></td>
+          </tr>
+          <% end %>
+        </tbody>
+    </table>
+  </main>
 </body>
 </html>
