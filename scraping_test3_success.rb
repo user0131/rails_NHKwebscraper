@@ -17,15 +17,20 @@ url = 'https://www3.nhk.or.jp/news/html/20240710/k10014507801000.html'
 driver.get(url)
 
 # 記事のタイトルを取得
-#title_element = driver.find_element(xpath: '//*[@id="main"]/article/header/h1')
-#title = title_element.text
+title_element = driver.find_element(xpath: '//*[@id="main"]/article[2]/section/header/div/h1/span')
+title = title_element.text
+
+# 記事の投稿日時を取得
+time_element = driver.find_element(xpath: '//*[@id="main"]/article[2]/section/header/div/p/time')
+time = time_element.text
 
 # 記事の本文を取得（最初の段落）
 content_element = driver.find_element(xpath: '//*[@id="main"]/article[2]/section/section/div/div/section/div/p[1]')
 content = content_element.text
 
 # 結果を表示
-#puts "Title: #{title}"
+puts "Title: #{title}"
+puts "Time: #{time}"
 puts "Content: #{content}"
 
 # 必要に応じて抽出したデータをJSON形式で保存
