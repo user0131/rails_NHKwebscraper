@@ -30,7 +30,6 @@ if items_array.is_a?(Array)
     end
   end
 end
-news = {}
 
 # 取得した"title"の値を表示
 puts "Titles: #{titles}"

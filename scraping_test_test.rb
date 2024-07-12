@@ -15,19 +15,19 @@ namespace :scrape do
     response = Net::HTTP.get(uri)
     json_data = JSON.parse(response)
     
-    #linkを格納するプログラム
+    # 記事の詳細ページのリンクを取得
     links = []
-    first_hash = json_data.values.first # ハッシュの最初の値を取得
-    items_array = first_hash['item'] if first_hash.is_a?(Hash) # "item"キーの値である配列を取得
+    first_hash = json_data.values.first
+    items_array = first_hash['item'] if first_hash.is_a?(Hash)
+    
     if items_array.is_a?(Array)
-      items_array.take(3).each do |item|
+      items_array.each do |item|
         if item.is_a?(Hash) && item.key?('link')
           detail_url = 'https://www3.nhk.or.jp' + item['link']
           links << detail_url
         end
       end
     end
-    
     
     # ChromeDriverのサービスを定義
     service = Selenium::WebDriver::Service.chrome(path: '/usr/local/bin/chromedriver')
@@ -44,19 +44,17 @@ namespace :scrape do
     begin
       links.each do |link|
         driver.get(link)
-        wait = Selenium::WebDriver::Wait.new(timeout: 30) # 最大30秒待機する
 
-        # 記事のタイトルを取得/html/body/div[1]/div/div/main/article[3]/section/header/div/h1/span
-        title_element = wait.until { driver.find_element(xpath: '//*[@id="main"]/article/section/header/div/h1/span') }
-        //*[@id="main"]/article[3]/section/header/div/h1/span
+        # 記事のタイトルを取得
+        title_element = driver.find_element(xpath: '//*[@id="main"]/article[2]/section/header/div/h1/span')
         title = title_element.text
 
         # 記事の投稿日時を取得
-        time_element = wait.until { driver.find_element(xpath: '//*[@id="main"]/article/section/header/div/p/time') }
+        time_element = driver.find_element(xpath: '//*[@id="main"]/article[2]/section/header/div/p/time')
         time = time_element.text
 
         # 記事の本文を取得（最初の段落）
-        content_element = wait.until { driver.find_element(xpath: '//*[@id="main"]/article/section/section/div/div/section/div/p') }
+        content_element = driver.find_element(xpath: '//*[@id="main"]/article[2]/section/section/div/div/section/div/p[1]')
         content = content_element.text
 
         # データベースに保存
