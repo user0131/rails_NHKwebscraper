@@ -48,7 +48,6 @@ namespace :scrape do
 
         # 記事のタイトルを取得/html/body/div[1]/div/div/main/article[3]/section/header/div/h1/span
         title_element = wait.until { driver.find_element(xpath: '//*[@id="main"]/article/section/header/div/h1/span') }
-        //*[@id="main"]/article[3]/section/header/div/h1/span
         title = title_element.text
 
         # 記事の投稿日時を取得
