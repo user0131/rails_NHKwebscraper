@@ -45,8 +45,8 @@
   <header>
     <h1>スクレイピングアプリケーション</h1>
     <%= form_with url: scrape_articles_path, method: :post do %>
-      <%= text_field_tag :url, nil, placeholder: 'スクレイピングするURLを入力', required: true %>
-      <%= submit_tag '実行' %>
+      <%= text_field_tag :url, nil, placeholder: 'スクレイピングするURLを入力', required: true, style: "width: 30%;height: 20px;padding: 10px;margin-bottom: 16px;border: 1px solid #ccc;border-radius: 3px;font-size: 16px;" %>
+      <%= submit_tag '実行', style: "width: 10%; padding: 10px; margin: 0px 20px 16px; color: black; border: 1px solid #ccc; border-radius: 4px; cursor: pointer;" %>
     <% end %>
   </header>
 </body>

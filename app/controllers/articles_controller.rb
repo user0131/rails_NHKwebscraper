@@ -10,8 +10,8 @@ class ArticlesController < ApplicationController
     Article.destroy_all
     url = params[:url]
     scrape_articles(url)
-    @articles = Article.all
-    render 'show'
+    latest_article = Article.last
+    redirect_to article_path(latest_article) if latest_article.present?
   end
 
   private
