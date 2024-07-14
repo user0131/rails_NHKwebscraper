@@ -1,9 +1,10 @@
 class ArticlesController < ApplicationController
   def index
+    @articles = Article.all
   end
 
   def show
-    @articles = Article.all
+    @articles = Article.find(params[:id])
   end
 
   #scrapeアクション。入力したurlをもとにスクレイピングする
@@ -11,7 +12,7 @@ class ArticlesController < ApplicationController
     url = params[:url]
     scrape_articles(url)
     @articles = Article.all
-    render 'show'
+    render 'index'
   end
 
   private

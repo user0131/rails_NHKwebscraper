@@ -1,5 +1,5 @@
 Rails.application.routes.draw do
+   resources :articles, only: [:index, :show]
    root 'articles#index'
-   resources :articles
-   post '/scrape', to: 'articles#scrape'
+   post 'articles/scrape', to: 'articles#scrape'
 end
