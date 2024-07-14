@@ -13,8 +13,10 @@ gem "jbuilder",        "2.11.5"
 gem "puma",            "5.6.8"
 gem "bootsnap",        "1.16.0", require: false
 gem "sqlite3",         "1.6.1"
-gem "selenium-webdriver", "4.8.3"  # 追加
+gem "selenium-webdriver"
 gem "webdrivers",         "5.2.0"
+gem 'pg'
+
 
 group :development, :test do
   gem "debug",   "1.7.1", platforms: %i[ mri mingw x64_mingw ]
