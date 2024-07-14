@@ -1,5 +1,4 @@
 Rails.application.routes.draw do
-   root 'articles#index'
-   resources :articles
-   post '/scrape', to: 'articles#scrape'
-end
+   resources :articles, only: [:index, :show]
+   post 'articles/scrape', to: 'articles#scrape', as: 'scrape_articles'
+ end
