@@ -9,3 +9,8 @@ two:
   title: MyString
   time: MyString
   content: MyText
+
+three:
+  title: MyString
+  time: MyString
+  content: MyText

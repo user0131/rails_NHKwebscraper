@@ -51,7 +51,7 @@
       content_element = wait.until { driver.find_element(xpath: '//*[@id="main"]/article/section/section/div/div/section/div/p') }
       content = content_element.text
 
-      # データベースに保存
+      # データベースに保存(今回はターミナル上に出力)
       puts title
       puts time
       puts content

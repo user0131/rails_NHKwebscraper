@@ -3,10 +3,11 @@ class ArticlesController < ApplicationController
   end
 
   def show
-    @article = Article.all
+    @articles = Article.all
   end
 
   def scrape
+    Article.destroy_all
     url = params[:url]
     scrape_articles(url)
     @articles = Article.all

@@ -1,4 +1,7 @@
 Rails.application.routes.draw do
-   resources :articles, only: [:index, :show]
-   post 'articles/scrape', to: 'articles#scrape', as: 'scrape_articles'
+  # ルートページをarticlesコントローラーのindexアクションに設定する例
+  root 'articles#index'
+
+  resources :articles, only: [:index, :show]
+  post 'articles/scrape', to: 'articles#scrape', as: 'scrape_articles'
  end
