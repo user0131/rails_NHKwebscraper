@@ -16,6 +16,7 @@ gem "sqlite3",         "1.6.1"
 gem "selenium-webdriver"
 gem "webdrivers",         "5.2.0"
 gem 'pg'
+gem "capybara",                 "3.38.0"
 
 
 group :development, :test do
@@ -30,7 +31,6 @@ group :development do
 end
 
 group :test do
-  gem "capybara",                 "3.38.0"
   gem "rails-controller-testing", "1.0.5"
   gem "minitest",                 "5.18.0"
   gem "minitest-reporters",       "1.6.0"

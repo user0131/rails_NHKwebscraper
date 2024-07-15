@@ -38,7 +38,11 @@ class ArticlesController < ApplicationController
       end
     end
 
-    service = Selenium::WebDriver::Service.chrome(path: '/usr/local/bin/chromedriver')
+
+    service = Selenium::WebDriver::Service.chrome
+      (path: ENV['CHROMEDRIVER_PATH'],
+      port: 4444,
+    )
     options = Selenium::WebDriver::Chrome::Options.new
     options.add_argument('--headless')
     options.add_argument('--no-sandbox')

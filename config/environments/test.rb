@@ -57,4 +57,18 @@ Rails.application.configure do
 
   # Annotate rendered view with file names.
   # config.action_view.annotate_rendered_view_with_filenames = true
+  # config/environments/test.rb などの適切なファイルに追加します
+Capybara.register_driver :selenium do |app|
+  Capybara::Selenium::Driver.new(
+    app,
+    browser: :chrome,
+    options: Selenium::WebDriver::Chrome::Options.new(
+      args: %w[no-sandbox headless disable-gpu window-size=1920,1080]
+    )
+  )
+end
+
+Capybara.server_host = '0.0.0.0'
+Capybara.server_port = ENV['PORT']
+
 end
