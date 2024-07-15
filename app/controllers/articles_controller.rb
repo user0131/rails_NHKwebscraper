@@ -9,10 +9,17 @@ class ArticlesController < ApplicationController
   def scrape
     Article.destroy_all
     url = params[:url]
-    scrape_articles(url)
-    latest_article = Article.last
-    redirect_to article_path(latest_article) if latest_article.present?
+  
+    if url == "https://www3.nhk.or.jp/news/word/0001539.html"
+      url = "https://www3.nhk.or.jp/news/json16/word/0001539_001.json?_=1720541485092"
+      scrape_articles(url)
+      latest_article = Article.last
+      redirect_to article_path(latest_article) if latest_article.present?
+    else
+      return
+    end
   end
+  
 
   private
 
