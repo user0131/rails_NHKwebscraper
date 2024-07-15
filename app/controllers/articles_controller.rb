@@ -40,7 +40,7 @@ class ArticlesController < ApplicationController
 
 
     service = Selenium::WebDriver::Service.chrome
-      (path: ENV['CHROMEDRIVER_PATH'],
+      (path: '/app/.chromedriver/bin/chromedriver',
       port: 4444,
     )
     options = Selenium::WebDriver::Chrome::Options.new
