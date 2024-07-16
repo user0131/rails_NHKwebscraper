@@ -70,7 +70,10 @@ class ArticlesController < ApplicationController
         time_element = wait.until { driver.find_element(xpath: '//*[@id="main"]/article/section/header/div/p/time') }
         time = time_element.text
 
-        content_element = wait.until { driver.find_element(xpath: '//*[@id="main"]/article/section/section/div/div/section/div/p') }
+        content_element = wait.until { driver.find_element(xpath: '//*[@id="main"]/article/section/section/div') }
+                                                                  #//*[@id="main"]/article[3]/section/section/div/p
+                                                                  #//*[@id="main"]/article[3]/section/section/div/div/section/div/p
+                                                                  #//*[@id="main"]/article[3]/section/section/div
         content = content_element.text
 
         Article.create(title: title, time: time, content: content)
