@@ -1,5 +1,5 @@
 Rails.application.routes.draw do
-  # ルートページをarticlesコントローラーのindexアクションに設定する例
+  # ルートページをarticlesコントローラーのindexアクションに設定する
   root 'articles#index'
 
   resources :articles, only: [:index, :show]

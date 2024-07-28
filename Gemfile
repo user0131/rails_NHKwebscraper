@@ -17,6 +17,8 @@ gem "selenium-webdriver"
 gem "webdrivers",         "5.2.0"
 gem 'pg'
 gem "capybara",                 "3.38.0"
+gem 'openai'
+
 
 
 group :development, :test do

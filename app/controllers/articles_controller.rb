@@ -6,6 +6,19 @@ class ArticlesController < ApplicationController
     @articles = Article.all
   end
 
+  def summarize_and_assess
+    article_text = params[:article_text]
+    openai_service = OpenAIService.new
+
+    @summary = openai_service.summarize_article(article_text)
+    @risk_score = openai_service.assess_risk(article_text)
+
+    respond_to do |format|
+      format.html
+      format.json { render json: { summary: @summary, risk_score: @risk_score } }
+    end
+  end
+
   def scrape
     Article.destroy_all
     url = params[:url]
@@ -83,5 +96,12 @@ class ArticlesController < ApplicationController
     ensure
       driver.quit if driver
     end  
+  end
+
+  def summarize_and_assess_article(article)
+    openai_service = OpenAIService.new
+    summary = openai_service.summarize_article(article.content)
+    risk_score = openai_service.assess_risk(article.content)
+    article.update(summary: summary, risk_score: risk_score)
   end
 end
