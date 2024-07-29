@@ -1,0 +1,14 @@
+require 'openai'
+
+client = OpenAI::Client.new(access_token: 'sk-None-J96fOoSLvQvSNkAMjetIT3BlbkFJGOV0JSM57SoYRiM47c6w')
+
+response = client.chat(
+  parameters: {
+    model: "gpt-3.5-turbo",
+    messages: [
+      { role: "user", content: "こんにちは" }
+    ]
+  }
+)
+
+puts response.dig("choices", 0, "message", "content")

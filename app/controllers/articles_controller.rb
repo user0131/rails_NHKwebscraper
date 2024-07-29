@@ -6,17 +6,8 @@ class ArticlesController < ApplicationController
     @articles = Article.all
   end
 
-  def summarize_and_assess
-    article_text = params[:article_text]
-    openai_service = OpenAIService.new
-
-    @summary = openai_service.summarize_article(article_text)
-    @risk_score = openai_service.assess_risk(article_text)
-
-    respond_to do |format|
-      format.html
-      format.json { render json: { summary: @summary, risk_score: @risk_score } }
-    end
+  def openai_service
+    @openai_service ||= OpenAIService.new
   end
 
   def scrape
@@ -59,11 +50,12 @@ class ArticlesController < ApplicationController
     end
 
 
-    service = Selenium::WebDriver::Service.chrome(
-      path: '/app/.chromedriver/bin/chromedriver',
-      port: 4444,
-    )
-    #development用→ service = Selenium::WebDriver::Service.chrome(path: '/usr/local/bin/chromedriver')
+    #service = Selenium::WebDriver::Service.chrome(
+    #  path: '/app/.chromedriver/bin/chromedriver',
+    #  port: 4444,
+    #)
+    #development用→ 
+    service = Selenium::WebDriver::Service.chrome(path: '/usr/local/bin/chromedriver')
 
     options = Selenium::WebDriver::Chrome::Options.new
     options.add_argument('--headless')
@@ -89,7 +81,17 @@ class ArticlesController < ApplicationController
                                                                   #//*[@id="main"]/article[3]/section/section/div
         content = content_element.text
 
-        Article.create(title: title, time: time, content: content)
+        begin
+          summary = summarize_article(content)
+          risk_score = assess_risk(content)
+          puts "Summary: #{summary}, Risk Score: #{risk_score}" # ここで要約とリスクスコアを出力
+        rescue StandardError => e
+          puts "Error processing article: #{e.message}"
+          summary = nil
+          risk_score = nil
+        end
+
+        Article.create(title: title, time: time, content: content, summary: summary, risk_score: risk_score)
       end
     rescue Selenium::WebDriver::Error::NoSuchElementError => e
       puts "Error: #{e.message}"
@@ -98,10 +100,116 @@ class ArticlesController < ApplicationController
     end  
   end
 
-  def summarize_and_assess_article(article)
-    openai_service = OpenAIService.new
-    summary = openai_service.summarize_article(article.content)
-    risk_score = openai_service.assess_risk(article.content)
-    article.update(summary: summary, risk_score: risk_score)
+  def summarize_article(article_text)
+    require 'openai'
+    puts "Calling OpenAI API for summarization..." # デバッグ用ログ
+    @client = OpenAI::Client.new(access_token: 'sk-None-J96fOoSLvQvSNkAMjetIT3BlbkFJGOV0JSM57SoYRiM47c6w')
+    response = @client.chat(
+      parameters: {
+        model: 'gpt-3.5-turbo',
+        messages: [
+          { role: 'system', content: 'あなたは優秀なAIアシスタントです。' },
+          { role: 'user', content: "以下の記事を要約してください。ですます調を使ってください。：\n\n#{article_text}\n\n要約：" }
+        ],
+      }
+    )
+    puts response.inspect # ここでレスポンスの内容を出力
+
+    if response && response['choices'] && response['choices'][0] && response['choices'][0]['message'] && response['choices'][0]['message']['content']
+      response['choices'][0]['message']['content'].strip
+    else
+      puts "Invalid response format"
+      nil
+    end
+  rescue StandardError => e
+    puts "Error summarizing article: #{e.message}"
+    nil
+  end
+
+  def assess_risk(article_text)
+    require 'openai'
+    puts "Calling OpenAI API for risk assessment..." # デバッグ用ログ
+    @client = OpenAI::Client.new(access_token: 'sk-None-J96fOoSLvQvSNkAMjetIT3BlbkFJGOV0JSM57SoYRiM47c6w')
+    response = @client.chat(
+      parameters: {
+        model: 'gpt-3.5-turbo',
+        temperature: 0, 
+        messages: [
+          { role: 'system', content: 'あなたは優秀なAIアシスタントです。' },
+          { role: 'user', content: "
+          #要件
+            - 以後の会話では、あなたはニュース記事のリスク判定BOTとして振る舞います
+            - リスクは被害範囲・被害程度・社会的影響・死傷者・被害金額の５つの項目でそれぞれ0から20の20段階で評価されます。リスクはその５つの項目の評価の合計となります。
+            - 値が高いほどリスクが高いです。
+
+          #考え方
+            ニュース記事から被害程度・被害程度・社会的影響・死傷者・被害金額にかかわる内容を抽出・判断。次のような観点で評価する。
+            ・被害範囲
+             0: 被害が発生していない、または被害が非常に限られている（例: 一部の建物の破損）。
+             5: 市町村レベルでの被害（例: 小規模な地域での停電や水害）。
+             10: 都道府県レベルでの被害（例: 大規模な洪水や地震による広範な被害）。
+             15: 国レベルでの被害（例: 国全体に影響を及ぼす自然災害や事故）。
+             20: 国際的な規模での被害（例: 大規模なパンデミックや戦争、国際的なテロ事件）。
+            ・被害程度
+             0: 被害が発生していない、または被害が軽微である（例: 軽微な物理的損害）。
+             5: 軽度の被害（例: 数件の軽傷や小規模な財産損失）。
+             10: 中程度の被害（例: 住宅やビルの一部損壊、数十人の負傷者）。
+             15: 大規模な被害（例: 複数のビル倒壊、大規模な火災、数百人の負傷者）。
+             20: 重大な被害（例: 大規模なテロ事件や自然災害で、多数の死傷者と巨額の損害）。
+            ・社会的影響
+             0: 社会的影響がない、または非常に小さい（例: ローカルニュースとしての報道）。
+             5: 限定的な社会的影響（例: 一部の地域での騒動や不便）。
+             10: 中程度の社会的影響（例: 複数の都市での影響やニュースの注目）。
+             15: 広範な社会的影響（例: 国家規模での対応が必要な状況、重要な政策変更）。
+             20: グローバルな社会的影響（例: 世界的なパンデミックや国際的な経済危機）。
+            ・死傷者
+             0: 死亡者や負傷者がいない。
+             5: 少数の負傷者（例: 数人の軽傷）。
+             10: 中程度の死傷者数（例: 数十人の負傷者または少数の死亡者）。
+             15: 多数の死傷者（例: 数百人の負傷者、または複数の死亡者）。
+             20: 大規模な死傷者（例: 数千人規模の死亡者または負傷者）。
+            ・被害金額
+             0: 被害金額が0円、または非常に小さい。
+             5: 小規模な被害金額（例: 数百万円程度）。
+             10: 中程度の被害金額（例: 数億円程度）。
+             15: 大規模な被害金額（例: 数十億円程度）。
+             20: 巨額の被害金額（例: 数兆円規模の損失）。
+          ## 出力形式
+            データは次の形式で返してください。
+            
+            リスクスコア:{(リスクスコア)}
+            
+          #例
+            例えば、被害範囲の判定が10、被害程度の判定が8、社会的影響の判定が18、死傷者の判定が4、被害金額の判定が20だったら、リスクスコア=10+8+18+4+20=60となり出力は次のようになります
+
+            リスクスコア:{60}
+
+          それでは、以下の記事のリスクを1から100で評価してください。：\n\n#{article_text}" }
+        ],
+      }
+    )
+
+    puts "API response: #{response.inspect}" # レスポンス全体を出力
+
+    if response && response['choices'] && response['choices'][0] && response['choices'][0]['message'] && response['choices'][0]['message']['content']
+      content = response['choices'][0]['message']['content'].strip
+      puts "Raw content received: #{content}" # 受信した内容の生データを出力
+
+      # リスクスコアの行を抽出
+      if match = content.match(/リスクスコア[:：]\s*(\d+)/)
+        risk_score = match[1].to_i
+        puts "Extracted risk score: #{risk_score}" # 抽出されたリスクスコアを出力
+        risk_score
+      else
+        puts "Risk score not found in the content"
+        nil
+      end
+    else
+      puts "Invalid response format"
+      nil
+    end
+  rescue StandardError => e
+    puts "Error assessing risk: #{e.message}"
+    nil
   end
 end

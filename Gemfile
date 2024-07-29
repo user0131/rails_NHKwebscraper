@@ -17,12 +17,10 @@ gem "selenium-webdriver"
 gem "webdrivers",         "5.2.0"
 gem 'pg'
 gem "capybara",                 "3.38.0"
-gem 'openai'
-
-
+gem 'ruby-openai' # 'ruby-openai'ではなく'openai'に統一
 
 group :development, :test do
-  gem "debug",   "1.7.1", platforms: %i[ mri mingw x64_mingw ]
+  gem "debug",   "1.7.1", platforms: %i[mri mingw x64_mingw]
 end
 
 group :development do

@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>スクレイピングアプリケーション</title>
-    <style>
+     <style>
         body {
             font-family: Arial, sans-serif;
         }
@@ -51,6 +51,7 @@
             width: 90%;
             margin: 20px auto;
             border-collapse: collapse;
+            table-layout: fixed;
         }
         th, td {
             border: 1px solid #ddd;
@@ -62,6 +63,21 @@
         }
         td {
             vertical-align: top;
+            word-wrap: break-word;
+        }
+        th:nth-child(1), td:nth-child(1) {
+            width: 15%;
+        }
+        th:nth-child(2), td:nth-child(2) {
+            width: 10%;
+            text-align: center; 
+            margin:auto
+        }
+        th:nth-child(3), td:nth-child(3) {
+            width: 25%;
+        }
+        th:nth-child(4), td:nth-child(4) {
+            width: 50%;
         }
     </style>
 </head>
