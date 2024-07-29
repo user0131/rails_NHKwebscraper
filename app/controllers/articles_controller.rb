@@ -6,9 +6,6 @@ class ArticlesController < ApplicationController
     @articles = Article.all
   end
 
-  def openai_service
-    @openai_service ||= OpenAIService.new
-  end
 
   def scrape
     Article.destroy_all
@@ -196,8 +193,8 @@ class ArticlesController < ApplicationController
       content = response['choices'][0]['message']['content'].strip
       puts "Raw content received: #{content}" # 受信した内容の生データを出力
 
-      # リスクスコアの行を抽出
-      if match = content.match(/リスクスコア[:：]\s*(\d+)/)
+      # リスクスコアの行を抽出　
+      if match = content.match(/リスクスコア[:：]\s*\{(\d+)\}/)
         risk_score = match[1].to_i
         puts "Extracted risk score: #{risk_score}" # 抽出されたリスクスコアを出力
         risk_score
@@ -213,4 +210,5 @@ class ArticlesController < ApplicationController
     puts "Error assessing risk: #{e.message}"
     nil
   end
+
 end
