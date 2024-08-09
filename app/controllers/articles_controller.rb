@@ -47,11 +47,12 @@ class ArticlesController < ApplicationController
     end
 
 
-    service = Selenium::WebDriver::Service.chrome(
-      path: '/app/.chromedriver/bin/chromedriver',
-      port: 4444,
-    )
-    #development用→ service = Selenium::WebDriver::Service.chrome(path: '/usr/local/bin/chromedriver')
+    #service = Selenium::WebDriver::Service.chrome(
+    #  path: '/app/.chromedriver/bin/chromedriver',
+    #  port: 4444,
+    #)
+    #development用→ 
+    service = Selenium::WebDriver::Service.chrome(path: '/usr/local/bin/chromedriver')  #100MB以上のファイルはプッシュできないため、ここにあるgoogle-chrome-stable_current_amd64.debファイルは消してあります。利用する際は再度ダウンロードしてください。
 
     options = Selenium::WebDriver::Chrome::Options.new
     options.add_argument('--headless')
@@ -77,15 +78,10 @@ class ArticlesController < ApplicationController
                                                                   #//*[@id="main"]/article[3]/section/section/div
         content = content_element.text
 
-        begin
-          summary = summarize_article(content)
-          risk_score = assess_risk(content)
-          puts "Summary: #{summary}, Risk Score: #{risk_score}" # ここで要約とリスクスコアを出力
-        rescue StandardError => e
-          puts "Error processing article: #{e.message}"
-          summary = nil
-          risk_score = nil
-        end
+        
+        summary = summarize_article(content)
+        risk_score = assess_risk(content)
+        puts "Summary: #{summary}, Risk Score: #{risk_score}" # ここで要約とリスクスコアを出力
 
         Article.create(title: title, time: time, content: content, summary: summary, risk_score: risk_score)
       end
@@ -99,7 +95,7 @@ class ArticlesController < ApplicationController
   def summarize_article(article_text)
     require 'openai'
     puts "Calling OpenAI API for summarization..." # デバッグ用ログ
-    @client = OpenAI::Client.new(access_token: 'sk-None-J96fOoSLvQvSNkAMjetIT3BlbkFJGOV0JSM57SoYRiM47c6w')
+    @client = OpenAI::Client.new(access_token: '自分のopenaiapiキーをここに入力')
     response = @client.chat(
       parameters: {
         model: 'gpt-3.5-turbo',
@@ -125,7 +121,7 @@ class ArticlesController < ApplicationController
   def assess_risk(article_text)
     require 'openai'
     puts "Calling OpenAI API for risk assessment..." # デバッグ用ログ
-    @client = OpenAI::Client.new(access_token: 'sk-None-J96fOoSLvQvSNkAMjetIT3BlbkFJGOV0JSM57SoYRiM47c6w')
+    @client = OpenAI::Client.new(access_token: '自分のopenaiapiキーをここに入力')
     response = @client.chat(
       parameters: {
         model: 'gpt-3.5-turbo',
